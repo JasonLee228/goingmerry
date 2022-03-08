@@ -17,9 +17,6 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //@Column(nullable = true)
-    //private String userid;//테이블에 들어갈 유저 회원개인정보 아이디. jwt에서 따오는 게 제일 좋을 것 같은데 지금은 일단 사용 ㄴ
-
     @Column(nullable = false)
     private String name;
 
@@ -33,14 +30,19 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false)
+    private String platform;//유저의 플랫폼명
+
     @Builder
     //public User(String userid, String name, String email, String picture, Role role) {
-    public User(String name, String email, String picture, Role role) {
+    public User(String name, String email, String picture, Role role, String platform) {
 
         this.name = name;
         this.email = email;
         this.picture = picture;
         this.role = role;
+        this.platform = platform;
+
     }
 
     public User update(String name, String picture) {

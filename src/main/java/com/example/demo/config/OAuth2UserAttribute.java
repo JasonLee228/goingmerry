@@ -115,14 +115,47 @@ public class OAuth2UserAttribute {
 			attributes.put(name, responseMap.get("family_name") + "" + responseMap.get("given_name"));
 			attributes.put(email, responseMap.get("email"));
 			attributes.put(picture, responseMap.get("picture"));
+
+
 		} else if("kakao".equals(registrationId)){
 
 			System.out.println("###kakao###!!!!!!!!!!!!!!!!!!");
+			//카카오 로그가 안 구해져 온다. 어디서 잘못됐는지 알아야함 -> post로 받아오는거 설정 안해줘서 안됐던거임.
+			/*
+			"id":2063499049,"connected_at":"2022-01-05T16:45:30Z"
+			,"properties":{
+						   "nickname":"이찬근"
+						  ,"profile_image":"http://k.kakaocdn.net/dn/bE3Nwi/btrmZlPztJQ/Yr2LC1OOL56KU6iKnNZ5Uk/img_640x640.jpg"
+						  ,"thumbnail_image":"http://k.kakaocdn.net/dn/bE3Nwi/btrmZlPztJQ/Yr2LC1OOL56KU6iKnNZ5Uk/img_110x110.jpg"
+						  }
+			,"kakao_account":{
+						   "profile_nickname_needs_agreement":false
+						   ,"profile_image_needs_agreement":false
+						   ,"profile":{
+						   				"nickname":"이찬근"
+						   				,"thumbnail_image_url":"http://k.kakaocdn.net/dn/h3mO0/btrtIUkC6Hu/GASklHcM0HMbFv8lQZOKUk/img_110x110.jpg"
+						   				,"profile_image_url":"http://k.kakaocdn.net/dn/h3mO0/btrtIUkC6Hu/GASklHcM0HMbFv8lQZOKUk/img_640x640.jpg"
+						  				,"is_default_image":false
+						 			  }
+						   ,"has_email":true
+						   ,"email_needs_agreement":false
+						   ,"is_email_valid":true
+						   ,"is_email_verified":true
+						   ,"email":"ypd05172@naver.com"
+						   }
+			 */
 
+
+			JsonNode node = new ObjectMapper().readTree(response);
+			System.out.println("###NODE###"+node+"\n###END NODE###");
+
+			attributes.put(id, node.get("id").toString().replaceAll("\"", ""));
+			attributes.put(name, node.get("properties").get("nickname"));
+			attributes.put(email, node.get("kakao_account").get("email"));
+			attributes.put(picture, node.get("properties").get("profile_image"));
 
 		}
-		
-		
+
 		if (logger.isDebugEnabled()) {
 			System.out.println("###logger.isDebugEnabled() !!!###");
 			logger.debug(attributes);

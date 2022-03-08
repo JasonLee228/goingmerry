@@ -115,6 +115,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 				if (logger.isDebugEnabled()) {
 					logger.debug(response);//여기서 디버깅?
 				}
+				System.out.println("###RESPONSE_service###"+response+"\n###END RESPONSE###");
 				//TODO 권한 정보도 넘겨야 할듯?
 				attributes = oauth2UserAttribute.getOAuth2UserAttributes(clientRegistrationId, response);
 
@@ -156,7 +157,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
 	//private User saveOrUpdate(OAuth2UserAttribute attributes) {
 	private User saveOrUpdate(OAuthAttributes attributes) {
-		User user = repository.findByEmail(attributes.getEmail())
+		//User user = repository.findByEmail(attributes.getEmail())
+		User user = repository.findByEmailAndPlatform(attributes.getEmail(), attributes.getPlatform())
 				//.map(entity -> entity.update(attributes.getName(), attributes.getPicture()))
 				.map(entity -> entity.update(attributes.getName(), attributes.getPicture()))
 				.orElse(attributes.toEntity());

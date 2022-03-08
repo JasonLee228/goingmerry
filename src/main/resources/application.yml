@@ -26,6 +26,8 @@ spring:
                   redirect-uri: http://localhost:8080/oauth2/callback/kakao
                   authorization-grant-type: authorization_code
                   client-name: kakao
+                  client-authentication-method: POST
+                  scope: profile_nickname,profile_image,account_email
             provider:
                naver:
                   authorization-uri: https://nid.naver.com/oauth2.0/authorize
@@ -45,7 +47,8 @@ logging:
 jwt:
    toekn-issuer: foo.com
    token-name: foo-app-jwt
-   secret: 12345
+   #secret: 12345
+   secret: 123456789
    expire-time: 300 #sec
 
 # 프론트엔드 애플리케이션은 어차피 SPA

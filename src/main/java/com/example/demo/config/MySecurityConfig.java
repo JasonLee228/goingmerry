@@ -47,8 +47,10 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 		       .redirectionEndpoint()
 		          .baseUri("/oauth2/callback/*") // 디폴트는 login/oauth2/code/*
 		          .and()
+				 //로그인이 성공하고, 아래 서비스 클래스에서 유저 정보를 받아와서 저장한다.
 		       .userInfoEndpoint().userService(customOAuth2UserService)
-		          .and()		          
+		          .and()
+				 //그리고 아래 로그인성공 핸들러에서 서비스에서 만들어진 user의 정보를 받아서 토큰을 발급해주는 것.
 		       .successHandler(customOAuth2SuccessHandler)
 		       .failureUrl("/main.do")
 		       .and()
@@ -57,6 +59,7 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 		       .and()
 		    .logout()
 		       .deleteCookies("JSESSIONID")
+				 //이제 아래 로그아웃 핸들러에서 토큰 받아와서 리소스서버 로그아웃도 해주는거 해야되는데 이제 그게 가장 큰 문제. 토큰 관리를 어떻게 할 것인가.
 		       .logoutSuccessHandler(customLogoutSuccessHandler)
 		       .and()
 		  .addFilterBefore(jwtAuthenticationFilter(), OAuth2AuthorizationRequestRedirectFilter.class); 
