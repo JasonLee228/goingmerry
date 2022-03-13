@@ -2,6 +2,7 @@ package com.example.demo.filter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -54,13 +55,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		if (requestMatcher.matches(request)) {
 			
 			String jwt = cookieUtils.getcookieValue(request, env.getProperty("jwt.token-name"));
-				
+
+
+				System.out.println("filter-cookie");
+				logger.debug(Arrays.stream(env.getActiveProfiles()).iterator());
+
+
 			if (logger.isDebugEnabled()) {
+				System.out.println("filter-jwt");
 				logger.debug(jwt);		
 			}
 				
 			if (jwt.isEmpty()) {
-				
+
 				if (logger.isDebugEnabled()) {
 					logger.debug("JWT is empty");		
 				}
@@ -71,6 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					
 				// JWT가 있다면 유효한지 검사
 				if (!jwtUtils.isValidateToken(jwt)) {
+					System.out.println("filter-토큰유효성");
 					if (logger.isDebugEnabled()) {
 						logger.debug("JWT is invalid");		
 					}
@@ -78,9 +86,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				}			
 				
 				// JWT가 만료되었는지 확인
-				//TODO 쿠키가 만료되는 경우는 아예 JWT가 없어졌을 것이므로 이 조건이 필요가 있을까?
+				//TODO 쿠키가 만료되는 경우는 아예 JWT가 없어졌을 것이므로 이 조건이 필요가 있을까? -> 만료 시 재발급으로 옮기면?
 				if (jwtUtils.isTokenExpired(jwt)) {
 					if (logger.isDebugEnabled()) {
+						System.out.println("filter-토큰만료성확인");
 						logger.debug("JWT is expired");		
 					}
 					response.setStatus(HttpServletResponse.SC_FORBIDDEN);					
@@ -89,6 +98,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				Map<String, Object> attributes = jwtUtils.getBobyFromToken(jwt);
 				
 				if (logger.isDebugEnabled()) {
+					System.out.println("filter-jwt토큰내용");
 					logger.debug("JWT::" + attributes);					
 				}
 				

@@ -57,6 +57,7 @@ public class OAuthAttributes {
 
     private static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes){
         Map<String , Object> response = (Map<String, Object>) attributes.get("response");
+
         System.out.println("###naver attributes### : "+attributes);
         System.out.println("###naver response### : "+response);
 
@@ -73,10 +74,12 @@ public class OAuthAttributes {
     private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes){
         Map<String , Object> response = (Map<String, Object>) attributes.get("kakao_account");
         Map<String , Object> properties = (Map<String, Object>) attributes.get("properties");//조회해본 결과 profile은 propseties안에 있음.
+        /*
         System.out.println("####attributes_key### : "+attributes.keySet());
         System.out.println("####attributes_value### : "+attributes.values());
         System.out.println("####response_key### : "+response.keySet());
         System.out.println("####response_value### : "+response.values());
+*/
 
         /*
         실제로 profile이 있기는 한데

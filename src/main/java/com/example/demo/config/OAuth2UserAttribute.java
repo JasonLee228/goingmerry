@@ -83,7 +83,7 @@ public class OAuth2UserAttribute {
 			 */
 			
 			JsonNode node = new ObjectMapper().readTree(response);
-			System.out.println("###NODE###"+node+"\n###END NODE###");
+			//System.out.println("###NODE###"+node+"\n###END NODE###");
 			attributes.put(id, node.get("response").get("id").toString().replaceAll("\"", ""));
 			attributes.put(name, node.get("response").get("name"));//nickname->name 변경,
 			attributes.put(email, node.get("response").get("email"));
@@ -119,7 +119,7 @@ public class OAuth2UserAttribute {
 
 		} else if("kakao".equals(registrationId)){
 
-			System.out.println("###kakao###!!!!!!!!!!!!!!!!!!");
+			//System.out.println("###kakao###!!!!!!!!!!!!!!!!!!");
 			//카카오 로그가 안 구해져 온다. 어디서 잘못됐는지 알아야함 -> post로 받아오는거 설정 안해줘서 안됐던거임.
 			/*
 			"id":2063499049,"connected_at":"2022-01-05T16:45:30Z"
@@ -147,7 +147,7 @@ public class OAuth2UserAttribute {
 
 
 			JsonNode node = new ObjectMapper().readTree(response);
-			System.out.println("###NODE###"+node+"\n###END NODE###");
+			//System.out.println("###NODE###"+node+"\n###END NODE###");
 
 			attributes.put(id, node.get("id").toString().replaceAll("\"", ""));
 			attributes.put(name, node.get("properties").get("nickname"));
@@ -157,7 +157,6 @@ public class OAuth2UserAttribute {
 		}
 
 		if (logger.isDebugEnabled()) {
-			System.out.println("###logger.isDebugEnabled() !!!###");
 			logger.debug(attributes);
 		}
 

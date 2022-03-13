@@ -43,11 +43,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
-		
-		if (logger.isDebugEnabled()) {
-			logger.debug(authentication.getPrincipal());
-		}
-		
+
 
 		String frontendAppEntryPage = env.getProperty("frontend-app.entry");
 				
@@ -56,19 +52,28 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 		//TODO 고유 ID와 권한을 DB에 저장하는 것이 어떨지? 권한은 리스트형이다.
 		// 
 		//authentication.getAuthorities()
-		
+		System.out.println("##Handler_authentication.getAuthorities()##");
+		logger.debug(authentication.getDetails());
 		
 		// JWT 토큰을 생성하여 쿠키에 저장
-		response.addCookie(cookieUtils.generateJwtHttpOnlyCookie(env.getProperty("jwt.token-name"), jwt, Integer.valueOf(env.getProperty("jwt.expire-time")).intValue()));
+		response.addCookie(cookieUtils.generateJwtHttpOnlyCookie(env.getProperty("jwt.token-name")
+				, jwt
+				, Integer.valueOf(env.getProperty("jwt.expire-time")).intValue()));
 		
 		//TODO HttpOnly=false인 쿠키가 필요하다?
-		response.addCookie(cookieUtils.generateNormalCookie(env.getProperty("jwt.token-name") + "-flag", "true", Integer.valueOf(env.getProperty("jwt.expire-time")).intValue()));
+		response.addCookie(cookieUtils.generateNormalCookie(env.getProperty("jwt.token-name") + "-flag"
+				, "true"
+				, Integer.valueOf(env.getProperty("jwt.expire-time")).intValue()));
 		
 		if (response.isCommitted()) {
 			logger.debug("Response has already been committed. Unable to redirect.");
 	        return;
-	    }
-		
+		}
+
+
+		System.out.println("##Handler_response##");
+		logger.debug(response.getHeaderNames().stream().toArray());
+
 		getRedirectStrategy().sendRedirect(request, response, frontendAppEntryPage);
 		
 	}	

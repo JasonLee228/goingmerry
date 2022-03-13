@@ -56,7 +56,7 @@ public class JwtUtils {
     		logger.debug(userDetails);
     	}    	
     	
-    	Map<String,Object> claim = new HashMap<>();
+    	Map<String,Object> claim = new HashMap<>();//토큰 내용
     	
     	if (userDetails instanceof DefaultOAuth2User) {
     		    		
@@ -66,7 +66,8 @@ public class JwtUtils {
     		claim.put("email", ((DefaultOAuth2User) userDetails).getAttributes().get("userEmail"));
     		claim.put("nickname", ((DefaultOAuth2User) userDetails).getAttributes().get("userName"));
     		
-    	} 
+    	}
+
     	//TODO 다른 타입의 사용자 정보의 경우는 나중에 생각해보자.
     	// else if () {}
     	

@@ -61,21 +61,27 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 		//이거로 정보 받아올 수 있나
 		OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
 		OAuth2User oAuth2User = delegate.loadUser(userRequest);
-		System.out.println("###userAttributes" + oAuth2User.getAttributes());
+		//System.out.println("###userAttributes" + oAuth2User.getAttributes());
+
+
 
 		String clientRegistrationId = userRequest.getClientRegistration().getRegistrationId();
 		String resourceServerUri = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUri();
 		String accessToken = userRequest.getAccessToken().getTokenValue();
+		//여기까지 기존 세션 코드에서 가져온 것. loaduser이라는 메소드는 공통으로 오버라이딩해서 쓰이기 때문에 같이 쓸 수 있다고 판별.
 
-		System.out.println("###registrationID###" + clientRegistrationId);
-		System.out.println("###resourceServerUri###" + resourceServerUri);
-		System.out.println("###accessToken###" + accessToken);//
-//여기까지 기존 세션 코드에서 가져온 것. loaduser이라는 메소드는 공통으로 오버라이딩해서 쓰이기 때문에 같이 쓸 수 있다고 판별.
+		System.out.println("##log-엑세스토큰##");
+		if (logger.isDebugEnabled()) {
+			logger.debug(userRequest.getAccessToken().getTokenValue());//여기서 디버깅?
+		}//userRequest.getAccessToken().getExpiresAt() , .getIssuedAt()
+
+		System.out.println("##log-scopes###");
+		logger.debug(userRequest.getClientRegistration().getScopes());
 
 
-//		if (logger.isDebugEnabled()) {
-//			logger.debug(accessToken);
-//		}	
+		//리프레쉬 토큰 어딨는지 알아야함
+
+
 
 		//OAuth2User user = null;
 
@@ -86,7 +92,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
 		//사용자 정보 중 사용자 아이디로 삼을 key
 		String userNameAttributeName = OAuth2UserAttribute.id;
-
 
 		//유저 정보 담을 map생성
 		Map<String, Object> attributes = null;
@@ -108,14 +113,25 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 			RestTemplate restTemplate = new RestTemplate();
 			restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
 
+			System.out.println("##log-httpheaders##");
+			if (logger.isDebugEnabled()) {
+				logger.debug(headers);
+			}
+
+
+			System.out.println("##log-TokenRequest###");
+			logger.debug(request);
+
 			try {
 				// 리소스 서버에게 사용자 정보 요청
 				String response = restTemplate.postForObject(resourceServerUri, request, String.class);//이거로 받아서
 
+				//로그는 진짜 로그일 뿐임.
 				if (logger.isDebugEnabled()) {
-					logger.debug(response);//여기서 디버깅?
+					logger.debug(response);
 				}
-				System.out.println("###RESPONSE_service###"+response+"\n###END RESPONSE###");
+
+				//System.out.println("###RESPONSE_service###"+response+"\n###END RESPONSE###");
 				//TODO 권한 정보도 넘겨야 할듯?
 				attributes = oauth2UserAttribute.getOAuth2UserAttributes(clientRegistrationId, response);
 
@@ -130,9 +146,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 				e.printStackTrace();
 			}
 
-			System.out.println("###authorities### : " + authorities);
-			System.out.println("###attributes### : " + attributes);
-			System.out.println("###userNameAttributeName### : " + userNameAttributeName);
+			//System.out.println("###authorities### : " + authorities);
+			//System.out.println("###attributes### : " + attributes);
+			//System.out.println("###userNameAttributeName### : " + userNameAttributeName);
 
 			user = new DefaultOAuth2User(authorities, attributes, userNameAttributeName);
 

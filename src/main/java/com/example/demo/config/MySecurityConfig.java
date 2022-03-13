@@ -1,6 +1,8 @@
 package com.example.demo.config;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +24,9 @@ import com.example.demo.filter.JwtAuthenticationFilter;
 @Configuration
 @EnableWebSecurity(debug=false)
 public class MySecurityConfig extends WebSecurityConfigurerAdapter {
-	
+
+	private static final Logger logger = LogManager.getLogger(MySecurityConfig.class);
+
 	@Autowired
     private CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 	
@@ -62,8 +66,9 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 				 //이제 아래 로그아웃 핸들러에서 토큰 받아와서 리소스서버 로그아웃도 해주는거 해야되는데 이제 그게 가장 큰 문제. 토큰 관리를 어떻게 할 것인가.
 		       .logoutSuccessHandler(customLogoutSuccessHandler)
 		       .and()
-		  .addFilterBefore(jwtAuthenticationFilter(), OAuth2AuthorizationRequestRedirectFilter.class); 
-		  
+		  .addFilterBefore(jwtAuthenticationFilter(), OAuth2AuthorizationRequestRedirectFilter.class);
+
+
 	}
 
 	
