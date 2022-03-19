@@ -23,6 +23,8 @@ import com.example.demo.utils.JwtUtils;
  * 이 핸들러에서 다시 JWT를 발급한다
  * @author kate
  *
+ * service에서 유저의 정보를 저장한 뒤, 핸들러에서 토큰 발급과 쿠키 처리를 같이 해준다.
+ * 쿠키는 웹에서 유저 정보라던가 그런거 긁어올 때 사용함
  */
 
 @Component
@@ -46,8 +48,10 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
 
 		String frontendAppEntryPage = env.getProperty("frontend-app.entry");
-				
-		String jwt = jwtUtils.generateToken((DefaultOAuth2User) authentication.getPrincipal());//토큰 생성?
+
+
+		//유저 정보를 가지고 토큰을 발급한다.
+		String jwt = jwtUtils.generateToken((DefaultOAuth2User) authentication.getPrincipal());//토큰 생성
 		
 		//TODO 고유 ID와 권한을 DB에 저장하는 것이 어떨지? 권한은 리스트형이다.
 		// 

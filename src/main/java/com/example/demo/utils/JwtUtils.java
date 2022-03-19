@@ -21,7 +21,7 @@ public class JwtUtils {
 	private static final Logger logger = LogManager.getLogger(JwtUtils.class);
 	
 	@Autowired
-	Environment env;
+	Environment env;//Environment = property, profiles 설정에 접근할 수 있는 스프링 환경 인터페이스.
 	
 	
     //토큰 유효성 검사
@@ -36,7 +36,9 @@ public class JwtUtils {
 		}
     }
 
-    // 토큰 만료 검사
+    // 토큰 만료 검사 -> 만료 기간 얼마 안 남았거나 만료됐을 시 재발급해주는 과정이 필요. 이는 access와 refresh의 필요성 또한 말해준다.
+	//토큰 만료 검사와 refresh를 위해서 유저생성 또는 로그인 시에 토큰을 발급하는 과정에서 유저 정보에 refresh토큰을 저장하고, access토큰을 주 토큰으로 사용할 예정
+	//해당 코드를 통해 만료 검사에서 탈락한 토큰은 재발급해주는 코드가 필요
     public boolean isTokenExpired(String token) {
     	try {
 	    	long exp = (Long) getBobyFromToken(token).get("exp");
@@ -49,7 +51,7 @@ public class JwtUtils {
 		}
     }
     
-    // 토큰 발급
+    // 토큰 발급, 아래 토큰 내용들.
     public <T> String generateToken(T userDetails) {
     	
     	if (logger.isDebugEnabled()) {
@@ -60,12 +62,13 @@ public class JwtUtils {
     	
     	if (userDetails instanceof DefaultOAuth2User) {
     		    		
-    		claim.put("iss", env.getProperty("jwt.toekn-issuer"));  // 발급자
+    		claim.put("iss", env.getProperty("jwt.toekn-issuer"));  // 발급자. yml 파일에 접근하여 가져온다. 아래도 다 같음.
     		claim.put("sub",  ((DefaultOAuth2User) userDetails).getName()); // subject 인증 대상(고유 ID)
     		
     		claim.put("email", ((DefaultOAuth2User) userDetails).getAttributes().get("userEmail"));
     		claim.put("nickname", ((DefaultOAuth2User) userDetails).getAttributes().get("userName"));
-    		
+			//claim.put("", ((DefaultOAuth2User) userDetails).getAttributes().get("userName"));
+    		//관련 정보 찾아본 뒤, refresh토큰 재발급과 관련된거로 추가할 것.
     	}
 
     	//TODO 다른 타입의 사용자 정보의 경우는 나중에 생각해보자.
@@ -75,17 +78,17 @@ public class JwtUtils {
     	String secret = env.getProperty("jwt.secret");
     	int exp = Integer.valueOf(env.getProperty("jwt.expire-time"));
     	
-        claim.put("iat", new Date(System.currentTimeMillis()));
-        claim.put("exp", new Date(System.currentTimeMillis() + (1000 * exp))); // 최대값은 쿠키 만료시간을 고려?
+        claim.put("iat", new Date(System.currentTimeMillis()));//토큰 생성 시간
+        claim.put("exp", new Date(System.currentTimeMillis() + (1000 * exp))); // 토큰 만료 시간
         
         return Jwts.builder()
         			  .setClaims(claim)
-        			  .signWith(SignatureAlgorithm.HS512, secret)
+        			  .signWith(SignatureAlgorithm.HS512, secret)//인코딩 알고리즘.
         			  .compact();
     }
     
     public Map<String,Object> getBobyFromToken(String token){
-		String secret = env.getProperty("jwt.secret");
+		String secret = env.getProperty("jwt.secret");//이 시크릿 키가 있어야지 토큰의 값을 정상적으로 디코딩해 읽을 수 있음.
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
     
