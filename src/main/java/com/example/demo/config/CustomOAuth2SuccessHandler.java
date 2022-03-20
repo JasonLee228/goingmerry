@@ -51,7 +51,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
 
 		//유저 정보를 가지고 토큰을 발급한다.
-		String jwt = jwtUtils.generateToken((DefaultOAuth2User) authentication.getPrincipal());//토큰 생성
+		String jwt = jwtUtils.generateAccessToken((DefaultOAuth2User) authentication.getPrincipal());//토큰 생성
 		
 		//TODO 고유 ID와 권한을 DB에 저장하는 것이 어떨지? 권한은 리스트형이다.
 		// 

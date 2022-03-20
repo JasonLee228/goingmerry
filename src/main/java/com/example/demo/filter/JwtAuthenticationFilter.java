@@ -85,12 +85,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);				
 				}			
 				
-				// JWT가 만료되었는지 확인
+				// JWT가 만료되었는지 확인 -> 만료 기간 설정해서 얼마 안 남았으면 재발급하는 식으로 진행
+				// refresh까지 만료됐으면 로그아웃
 				//TODO 쿠키가 만료되는 경우는 아예 JWT가 없어졌을 것이므로 이 조건이 필요가 있을까? -> 만료 시 재발급으로 옮기면?
 				if (jwtUtils.isTokenExpired(jwt)) {
 					if (logger.isDebugEnabled()) {
 						System.out.println("filter-토큰만료성확인");
-						logger.debug("JWT is expired");		
+
+						// 로그로 토큰 남은 기간 표시해줄 것
+						logger.debug("JWT is expired");
 					}
 					response.setStatus(HttpServletResponse.SC_FORBIDDEN);					
 				}
@@ -111,7 +114,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				String userNameAttributeName = "sub";
 				
 				//TODO
-				// 권한은 JWT에 저장하지 않기로 했는데?
+				//
 				List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 				authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 				

@@ -34,6 +34,7 @@ public class JwtUtils {
     	} catch (Exception e) {
 			return false;
 		}
+
     }
 
     // 토큰 만료 검사 -> 만료 기간 얼마 안 남았거나 만료됐을 시 재발급해주는 과정이 필요. 이는 access와 refresh의 필요성 또한 말해준다.
@@ -43,8 +44,11 @@ public class JwtUtils {
     	try {
 	    	long exp = (Long) getBobyFromToken(token).get("exp");
 	        final Date expiration = new Date(exp);
-	        
-	        return expiration.before(new Date());
+
+			logger.debug("토큰 만료 검사");
+			logger.debug(expiration);
+
+	        return expiration.before(new Date());//-> ?
 	        
     	}catch (Exception e) {
 			return false;
@@ -52,7 +56,7 @@ public class JwtUtils {
     }
     
     // 토큰 발급, 아래 토큰 내용들.
-    public <T> String generateToken(T userDetails) {
+    public <T> String generateAccessToken(T userDetails) {
     	
     	if (logger.isDebugEnabled()) {
     		logger.debug(userDetails);
@@ -62,7 +66,7 @@ public class JwtUtils {
     	
     	if (userDetails instanceof DefaultOAuth2User) {
     		    		
-    		claim.put("iss", env.getProperty("jwt.toekn-issuer"));  // 발급자. yml 파일에 접근하여 가져온다. 아래도 다 같음.
+    		claim.put("iss", env.getProperty("jwt.token-issuer"));  // 발급자. yml 파일에 접근하여 가져온다. 아래도 다 같음.
     		claim.put("sub",  ((DefaultOAuth2User) userDetails).getName()); // subject 인증 대상(고유 ID)
     		
     		claim.put("email", ((DefaultOAuth2User) userDetails).getAttributes().get("userEmail"));
@@ -74,17 +78,22 @@ public class JwtUtils {
     	//TODO 다른 타입의 사용자 정보의 경우는 나중에 생각해보자.
     	// else if () {}
     	
-        
-    	String secret = env.getProperty("jwt.secret");
+        /*
+
+         */
+    	String secret = env.getProperty("jwt.secret");//현재는 시크릿 키를 굉장히 간단하게 했지만,
+		//https://ayoteralab.tistory.com/entry/Spring-Boot-29-Google-OAuth-with-JWT-1?category=860804
+		//이 링크 참조해서 복잡한 키를 생성할 수 있도록 할 것.
     	int exp = Integer.valueOf(env.getProperty("jwt.expire-time"));
     	
         claim.put("iat", new Date(System.currentTimeMillis()));//토큰 생성 시간
         claim.put("exp", new Date(System.currentTimeMillis() + (1000 * exp))); // 토큰 만료 시간
         
         return Jwts.builder()
+				.setHeaderParam("typ","JWT")
         			  .setClaims(claim)
         			  .signWith(SignatureAlgorithm.HS512, secret)//인코딩 알고리즘.
-        			  .compact();
+        			  .compact();//compact()는 최종적인 토큰의 직렬화, string 으로의 변환을 담당한다.
     }
     
     public Map<String,Object> getBobyFromToken(String token){

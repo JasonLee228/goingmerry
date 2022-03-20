@@ -45,8 +45,11 @@ logging:
                   
                       
 jwt:
-   toekn-issuer: foo.com
-   token-name: foo-app-jwt
+   #이거 이름 바꾸면 왜 안되지
+   #token-issuer: foo.com
+   #token-name: foo-app-jwt
+   token-issuer: jason.com
+   token-name: jason-app-jwt
    #secret: 12345
    secret: 123456789
    expire-time: 90 #sec
@@ -107,8 +110,8 @@ logging:
                               
 
 jwt:
-   toekn-issuer: foo.com
-   token-name: foo-app-jwt
+   toekn-issuer: jason.com
+   token-name: jason-app-jwt
    secret: 12345
    expire-time: 300 #sec
 

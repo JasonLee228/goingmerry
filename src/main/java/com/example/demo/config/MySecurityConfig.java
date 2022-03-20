@@ -46,6 +46,8 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 		     .anyRequest().authenticated()
 		     .and()
 		 .csrf().disable()
+		.formLogin().disable()
+		.httpBasic().disable()
 		 .oauth2Login()
 		    .loginPage("/oauth2Login")
 		       .redirectionEndpoint()

@@ -18,6 +18,9 @@ public class User extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false)
+    private String userid;
+
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
@@ -32,6 +35,12 @@ public class User extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String platform;//유저의 플랫폼명
+
+    /*
+    ~~
+    ~~
+
+     */
 
     @Builder
     //public User(String userid, String name, String email, String picture, Role role) {
